@@ -5,7 +5,7 @@ from multiprocessing import Pool, cpu_count
 
 input_dirs = ["./data/black/", "./data/white/"]
 output_base_dir = "./intent/"
-key = ["hFile", "hKey", "th32ProcessID", "hMod", "hProcess", "hService", "hDevice"]
+key = ["hFile", "hKey", "BaseAddress", "th32ProcessID", "hMod", "hProcess", "hService", "hDevice"]
 
 
 
@@ -24,7 +24,7 @@ def process_file(args):
     file_name = os.path.basename(input_path).split('.')[0]
     specific_output_dir = os.path.join(output_base_dir, file_name)
     if os.path.exists(specific_output_dir):
-        print(f"跳过 {input_path}，因为它已经被处理过了。")
+        print(f"jump {input_path}。")
         return
     with open(input_path, 'r') as f:
         t = json.load(f)
@@ -75,7 +75,5 @@ def extract_and_save_features_parallel(input_dirs, output_base_dir, keyset):
     pool.close()
     pool.join()
 
-# 确保在上述代码之上定义或导入您的`call_matches`函数。
 
-# 调用并行函数的示例
 extract_and_save_features_parallel(input_dirs, output_base_dir, key)

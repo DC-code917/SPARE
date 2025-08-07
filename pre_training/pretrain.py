@@ -98,7 +98,7 @@ def main():
         args.single_gpu = False
         print("Using CPU mode for training.")
 
-    # 调用 trainer 进行训练
+   
     trainer.train_and_validate(args)
 
 

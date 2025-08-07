@@ -35,7 +35,7 @@ def random_handle_value(API: str, keys={"Handle", "FileHandle"}):
 
 
 
-def random_tid_value(API: str):
+def random_ptid_value(API: str):
 
     api_data = json.loads(API)
     
@@ -133,3 +133,60 @@ def random_file_path(API: str):
                 arg["value"] = value_mapping[key]
 
     return json.dumps(api_data, indent=4)
+
+
+
+
+
+
+def enhance_based_data(path, filename, new_file_path, enhance_factor=1):
+    """
+    Perform API-level data augmentation on a single JSON file.
+    
+    Parameters:
+    - path: Directory containing the original JSON files.
+    - filename: Name of the file to enhance.
+    - new_file_path: Directory where the enhanced samples will be saved.
+    - enhance_factor: Number of augmented samples to generate per instance.
+    """
+
+    # Load the original API sequence from JSON file
+    input_file = os.path.join(path, filename)
+    with open(input_file, "r", encoding="utf-8") as f:
+        try:
+            original_data = json.load(f)
+        except json.JSONDecodeError:
+            print(f"[ERROR] Failed to decode JSON: {filename}")
+            return
+
+    # Generate multiple enhanced versions
+    for i in range(enhance_factor):
+        # Deep copy the original data by re-serializing
+        new_instance = json.loads(json.dumps(original_data))
+
+        # Convert to string for the mutation functions
+        new_instance_str = json.dumps(new_instance)
+
+        # Apply four perturbation functions sequentially
+        new_instance_str = random_file_path(new_instance_str)
+        new_instance_str = random_address_value(new_instance_str, key="Address")
+        new_instance_str = random_ptid_value(new_instance_str)
+        new_instance_str = random_handle_value(new_instance_str, keys={"Handle", "FileHandle"})
+
+        # Parse the modified string back to JSON object
+        try:
+            enhanced_instance = json.loads(new_instance_str)
+        except json.JSONDecodeError:
+            print(f"[ERROR] Failed to decode enhanced JSON: {filename} -> augmented {i}")
+            continue
+
+        # Create a new filename with augmentation index
+        base_name = os.path.splitext(filename)[0]
+        new_filename = f"{base_name}_aug{i}.json"
+        save_path = os.path.join(new_file_path, new_filename)
+
+        # Save the enhanced JSON object
+        with open(save_path, "w", encoding="utf-8") as out_f:
+            json.dump(enhanced_instance, out_f, indent=2, ensure_ascii=False)
+
+        print(f"[OK] Saved enhanced sample: {new_filename}")
