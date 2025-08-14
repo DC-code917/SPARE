@@ -18,13 +18,13 @@ build_vocab(vocab_path)
 Pretrain Input Generation
 ```
 python3 pre-training/preprocess.py --corpus_path corpus.txt \
-​             --vocab_path models/encryptd_vocab.txt --seq_length 512 \
+​             --vocab_path models/vocab.txt --seq_length 1024 \
 ​             --dataset_path dataset.pt --processes_num 80 --target csmmsm
 ```
 Model Pretrain
 ```
  CUDA_VISIBLE_DEVICES=2,3,4 python3 pre-training/pretrain.py --dataset_path dataset.pt \
-​           --vocab_path models/encryptd_vocab.txt \
+​           --vocab_path models/vocab.txt \
 ​           --output_model_path model.bin \
 ​           --world_size 3 --gpu_ranks 0 1 2 --master_ip tcp://localhost:8888 \
 ​           --total_steps 90000 --save_checkpoint_steps 10000 --batch_size 64 \
